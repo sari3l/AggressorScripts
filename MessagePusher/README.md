@@ -8,7 +8,7 @@
 
 1. 修改 gui.cna 第一行中的 `<path>` 为jar文件所在绝对路径
 
-    ```java
+    ```sleep
     import content.Main from: /<path>/BotPush.jar;
     ```
 
