@@ -4,7 +4,7 @@
 
 ## 配置
 
-![](https://cdn.sari3l.com/messagepusher_1.png)
+![](https://github.com/sari3l/AggressorScripts/blob/master/MessagePusher/pics/messagepusher_1.png)
 
 1. 修改 gui.cna 第一行中的 `<path>` 为jar文件所在绝对路径
 
@@ -20,6 +20,4 @@
 
 ## 效果
 
-![](https://cdn.sari3l.com/messagepusher_2.png)
-
-
+![](https://github.com/sari3l/AggressorScripts/blob/master/MessagePusher/pics/messagepusher_2.png)
