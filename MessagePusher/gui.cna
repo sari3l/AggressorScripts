@@ -1,3 +1,7 @@
+# Color Coded Process Listing
+# Author: @sari3l
+#
+
 import content.Main from: /<path>/BotPush.jar;
 #local('$protcol $boturl $botparam');
 sub setup_setting {

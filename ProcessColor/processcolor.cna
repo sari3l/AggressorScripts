@@ -20,36 +20,57 @@ set BEACON_OUTPUT_PS {
 	$out .= "\cC[*]\o Chat Tools: \cD        LIGHT PURPLE \o \n";
 	$out .= "\cC[*]\o Proxy Tools: \c2               Blue \o \n";
 	$out .= "\cC[*]\o Remote Tools: \c9       LIGHT GREEN \o \n\n";
-	$out .= " PID   PPID  Name                         Arch  Session     User\n";
-	$out .= "\cE ---   ----  ----                         ----  -------     -----\n";
+	$out .= " PID   PPID  Name                                   Arch  Session     User\n";
+	$out .= "\cE ---   ----  ----                                   ----  -------     -----\n";
 
 	foreach $temp (split("\n", ["$2" trim])) {
 		($name, $ppid, $pid, $arch, $user, $session) = split("\t", $temp);
 		if(iff($pid eq $c_pid, true, false)) {
-			push(@ps, %(pid => $pid, entry => "\c7 $[5]pid $[5]ppid $[28]name $[5]arch $[11]session $user"));
+			push(@ps, %(pid => $pid, ppid => $ppid, deep => 0, pre => "\c7 $[5]pid $[5]ppid ", name => "$name", end => " $[5]arch $[11]session $user"));
 		} else if(iff($name in @avList, true, false)) {
-			push(@ps, %(pid => $pid, entry => "\c4 $[5]pid $[5]ppid $[28]name $[5]arch $[11]session $user"));
+			push(@ps, %(pid => $pid, ppid => $ppid, deep => 0, pre => "\c4 $[5]pid $[5]ppid ", name => "$name", end => " $[5]arch $[11]session $user"));
 		} else if(iff($name in @browserList, true, false)) {
-			push(@ps, %(pid => $pid, entry => "\cB $[5]pid $[5]ppid $[28]name $[5]arch $[11]session $user"));
+			push(@ps, %(pid => $pid, ppid => $ppid, deep => 0, pre => "\cB $[5]pid $[5]ppid ", name => "$name", end => " $[5]arch $[11]session $user"));
 		} else if(iff($name in @cmdList, true, false)) {
-			push(@ps, %(pid => $pid, entry => "\c8 $[5]pid $[5]ppid $[28]name $[5]arch $[11]session $user"));
+			push(@ps, %(pid => $pid, ppid => $ppid, deep => 0, pre => "\c8 $[5]pid $[5]ppid ", name => "$name", end => " $[5]arch $[11]session $user"));
 		} else if(iff($name in @chatList, true, false)) {
-			push(@ps, %(pid => $pid, entry => "\cD $[5]pid $[5]ppid $[28]name $[5]arch $[11]session $user"));
+			push(@ps, %(pid => $pid, ppid => $ppid, deep => 0, pre => "\cD $[5]pid $[5]ppid ", name => "$name", end => " $[5]arch $[11]session $user"));
 		} else if(iff($name in @proxyList, true, false)) {
-			push(@ps, %(pid => $pid, entry => "\c2 $[5]pid $[5]ppid $[28]name $[5]arch $[11]session $user"));
+			push(@ps, %(pid => $pid, ppid => $ppid, deep => 0, pre => "\c2 $[5]pid $[5]ppid ", name => "$name", end => " $[5]arch $[11]session $user"));
 		} else if(iff($name in @remoteList, true, false)) {
-			push(@ps, %(pid => $pid, entry => "\c9 $[5]pid $[5]ppid $[28]name $[5]arch $[11]session $user"));
+			push(@ps, %(pid => $pid, ppid => $ppid, deep => 0, pre => "\c9 $[5]pid $[5]ppid ", name => "$name", end => " $[5]arch $[11]session $user"));
 		} else {
-			push(@ps, %(pid => $pid, entry => " $[5]pid $[5]ppid $[28]name $[5]arch $[11]session $user"));
+			push(@ps, %(pid => $pid, ppid => $ppid, deep => 0, pre => " $[5]pid $[5]ppid ", name => "$name", end => " $[5]arch $[11]session $user"));
 		}
 	}
 
+	sub p_sort {
+		return iff(($1['ppid'] <=> $2['ppid']) == 0, $1['pid'] <=> $2['pid'] , $1['ppid'] <=> $2['ppid']);
+	}
+
 	# sort the processes please
-	sort({ return $1['pid'] <=> $2['pid']; }, @ps);
+	sort(&p_sort, @ps);
+	
+	$ps_len = size(@ps);
+	for ($f_i = 0; $f_i < $ps_len - 1; $f_i++) {
+		for ($c_i = $ps_len - 1; $c_i > $f_i; $c_i--) {
+			if (@ps[$c_i]['ppid'] == @ps[$f_i]['pid']) {
+				@ps[$c_i]['deep'] = @ps[$f_i]['deep'] + 1;
+				if ($c_i == $f_i + 1) {
+					break;
+				}
+				$temp = @ps[$c_i];
+				@ps[$c_i] = @ps[$c_i - 1];
+				@ps[$c_i - 1] = $temp;
+			}
+		}
+	}
 
 	# append to our outstring
 	foreach $temp (@ps) {
-		$out .= $temp['entry'] . "\n";
+		$temp_name = iff($temp['deep'], '  ' x $temp['deep'] . '└ ' . $temp['name'], $temp['name']); 
+		$temp['name'] = "$[38]temp_name";
+		$out .= $temp['pre'] . "$temp['name']" . $temp['end'] . "\n";
 	}
 
 	return $out;
