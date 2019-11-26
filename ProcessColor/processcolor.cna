@@ -2,6 +2,8 @@
 # Author: @sari3l
 # AV list based on @harleyQu1nn and @re4lity
 
+local('$c_i $f_i $ps_len $temp');
+
 set BEACON_OUTPUT_PS {
 	$c_pid = bdata($1)['pid'];
 	@browserList = @("chrome.exe", "chromium.exe", "firefox.exe", "MicrosoftEdge.exe", "iexplore.exe", "360se.exe", "360chrome.exe", "opera.exe", "maxthon.exe", "netscape.exe", "sogouexplorer.exe", "TheWorld.exe", "safari.exe", "UCBrowser.exe", "2345Explorer.exe", "baidubrowser.exe");

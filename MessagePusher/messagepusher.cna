@@ -1,9 +1,11 @@
-# Color Coded Process Listing
+# Message Pusher
 # Author: @sari3l
 #
 
 import content.Main from: /<path>/BotPush.jar;
-#local('$protcol $boturl $botparam');
+
+local('$protcol $method $isprivate $boturl $botparam $botcode');
+
 sub setup_setting {
 	local("%options");
 	%options = $3;
