@@ -7,7 +7,7 @@ $dingtalk_message_from = 'CS-Server';
 
 
 on beacon_initial {
-	# local($hostName $userName $externalIP $internalIP $os $content $date $time);
+	local('$hostName $userName $externalIP $internalIP $os $content $date $time');
 	$listener = beacon_info($1, 'listener');
 	$hostName = beacon_info($1, 'computer');
 	$userName = beacon_info($1, 'user');
